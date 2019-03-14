@@ -11,7 +11,7 @@ class Profile extends React.Component {
         }
     }
 
-    onProfileUpdate (data) {
+    onProfileUpdate = data => {
         fetch(`http://localhost:3000/profile/${this.props.user.id}`, {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
@@ -22,7 +22,7 @@ class Profile extends React.Component {
         }).catch (error => console.log(error)) 
     }
 
-    onFormChange (event) {
+    onFormChange = event => {
         switch(event.target.name) {
             case 'user-name':
                 this.setState({name: event.target.value})

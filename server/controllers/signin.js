@@ -1,9 +1,11 @@
+const jwt = require('jsonwebtoken');
+
 const handleSignin = (db, bcrypt, req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return Promise.reject('incorrect form submission');
   }
-  db.select('email', 'hash').from('login')
+  return db.select('email', 'hash').from('login')
     .where('email', '=', email)
     .then(data => {
       const isValid = bcrypt.compareSync(password, data[0].hash);
@@ -23,12 +25,25 @@ const getAuthTokenId = () => {
   console.log('auth ok')
 }
 
+const signToken = email => {
+  const jwtPayload = {email}
+  return jwt.sign(jwtPayload, 'YOUR_JWT_SECRET', { expiresIn: '2 days'});
+}
+
+const createSession = user => {
+  const { email, id } = user
+  const token = signToken(email)
+  return { succes: true, userId: id, token }
+}
+
 const signinAuthentication = (db, bcrypt) => (req, res) => {
-  console.log('hi')
   const { authorization } = req.headers;
   return authorization ? getAuthTokenId() :
     handleSignin(db, bcrypt, req, res)
-      .then (data => res.json(data))
+      .then (data => {
+        return data.id && data.email ? createSession(data) : Promise.reject(data)
+      })
+      .then(session => res.json(session))
       .catch (error => res.status(400).json(error))
 }
 
