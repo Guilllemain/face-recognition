@@ -45,6 +45,39 @@ class App extends Component {
     this.state = initialState;
   }
 
+  componentDidMount() {
+    const token = window.sessionStorage.getItem('token')
+    if (token) {
+      fetch('http://localhost:3000/signin', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.id) {
+            fetch(`http://localhost:3000/profile/${data.id}`, {
+              method: 'GET',
+              headers: {
+                'Content-type': 'application/json',
+                'Authorization': 'Bearer ' + token
+              }
+            })
+            .then(response => response.json())
+            .then(user => {
+              if (user && user.email) {
+                this.loadUser(user)
+                this.onRouteChange('home')
+              }
+            })
+          }
+        })
+        .catch(error => console.error(error))
+      })
+    }
+  }
+
   loadUser = (data) => {
     this.setState({user: {
       id: data.id,
