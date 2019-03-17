@@ -38,7 +38,7 @@ class Signin extends React.Component {
             method: 'GET',
             headers: {
               'Content-type': 'application/json',
-              'Authorization': 'Bearer ' + data.token
+              'Authorization': data.token
             }
           })
             .then(response => response.json())

@@ -40,7 +40,7 @@ const signToken = email => {
 }
 
 const setToken = (key, value) => {
-  return Promise.resole(redisClient.set(key, value))
+  return Promise.resolve(redisClient.set(key, value))
 }
 
 const createSession = user => {
@@ -65,5 +65,6 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
 }
 
 module.exports = {
-  signinAuthentication: signinAuthentication
+  signinAuthentication,
+  redisClient
 }
